@@ -1,0 +1,53 @@
+{{ 'component-frequently-bought-with.css' | asset_img_url | stylesheet_tag }}
+
+<div class="bought-together" id="bought-together-id">
+  {% if search.results != blank %}
+    {% assign array = search.terms | remove: 'id:' | split: ' OR ' | uniq %}
+
+    <div class="frequently-bought-together">
+      <h2 style="text-align: center;">Frequently Bought Together</h2>
+      <div class="frequently-bought-together-items">
+        {% for i in array %}
+          {% assign j = i | plus: 0 %}
+          {% assign item = search.results | where: 'id', "{{j-}}" %}
+          {% liquid
+            if forloop.index == 1
+              continue
+            endif
+            if forloop.index == 2
+              assign p = item[0]
+            endif
+            if forloop.index == 3
+              assign p = item[1]
+            endif
+          %}
+          {% liquid
+            assign current_variant = p.selected_or_first_available_variant
+            assign image = current_variant.featured_image | default: p.featured_image
+          %}
+
+          <div class="item">
+            <img
+              src="{{image | image_url}}"
+              alt="{{image.alt}}"
+              loading="eager"
+              width="100"
+              height="100">
+            <span class="title_span">{{ p.title }}</span>
+            <div class="price_span">{{ p.price | money }}</div>
+            <div class="select_container">
+              <input
+                type="checkbox"
+                data-product-id="{{p.selected_or_first_available_variant.id}}"
+                data-cart-quantity="1"
+                name="frequent-bought-choice"
+                id="frequent-bought-choice"
+                class="bought-together-checkbox">
+              <span>Add this</span>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+</div>

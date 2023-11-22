@@ -1,0 +1,107 @@
+{% comment %} {{ 'component-frequently-bought-with.css' | asset_img_url | stylesheet_tag }} {% endcomment %}
+
+<style>
+  .frequently-bought-together-items {
+    display: flex;
+  }
+
+  .product-bought-together__container {
+    display: inline-block;
+
+    font-size: 14px;
+    margin: 30px 0;
+    width: 100%;
+  }
+
+  .product-item {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column-reverse;
+    width: 30%;
+    position: relative;
+    vertical-align: top;
+    height: 200px;
+    padding: 10px;
+  }
+
+
+  .product-item-label {
+    /* margin: 10px; */
+    background-position: 50%;
+    background-size: cover;
+    border: 1px solid #e5e5e5;
+    border-radius: 3px;
+    bottom: 5%;
+    cursor: pointer;
+    left: 5%;
+    position: absolute;
+    right: 5%;
+    top: 5%;
+    width: 90%;
+  }
+
+  span.bought-together-visual {
+    bottom: 0;
+    height: 100%;
+    left: 0;
+    pointer-events: none;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 100%;
+  }
+
+  input.bought-together-checkbox {
+    position: absolute;
+    visibility: hidden;
+  }
+
+  input.bought-together-checkbox[type=checkbox]:checked + span.bought-together-visual {
+    border: 4px solid #ff8c01 !important;
+  }
+
+</style>
+
+
+{% liquid
+  assign product_bought_together = product.metafields.custom.frequently_bought_with | split: ',' | uniq
+%}
+
+{% if product_bought_together.size > 0 %}
+  <div id="product-bought-together" class="product-bought-together__container">
+    <div class="bought-together" id="bought-together-id">
+      {% assign prod_array = product.metafields.custom.frequently_bought_with.value %}
+      <div class="frequently-bought-together">
+        <h2 style="text-align: center;">Frequently Bought Together</h2>
+        <div class="frequently-bought-together-items">
+          {% for prod in prod_array %}
+            {% liquid
+              assign current_variant = prod.selected_or_first_available_variant
+              assign image = current_variant.featured_image | default: prod.featured_image
+            %}
+
+            <div
+              class="product-item"
+              data-product-price="{{ prod.price }}"
+              data-product-name="{{ prod.title }}"
+              data-product-variant-id="{{ prod.selected_or_first_available_variant.id }}">
+              <label class="product-item-label" style="background-image: url({{ image | image_url: width: 200 }});">
+                <input
+                  type="checkbox"
+                  data-product-id="{{ prod.selected_or_first_available_variant.id }}"
+                  data-cart-quantity="1"
+                  name="frequent-bought-choice"
+                  id="frequent-bought-choice"
+                  class="bought-together-checkbox">
+                <span class="bought-together-visual"></span>
+              </label>
+
+              <div class="price_span">{{ prod.price | money }}</div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+
+    </div>
+  </div>
+{% endif %}

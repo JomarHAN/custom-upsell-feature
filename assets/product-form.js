@@ -26,12 +26,42 @@ if (!customElements.get('product-form')) {
         this.submitButton.classList.add('loading');
         this.querySelector('.loading__spinner').classList.remove('hidden');
 
+        // Here we are possibility to the add one or multiple product
+        // var productsToAdd = [];
+        // const checkedProducts = document.querySelectorAll('.bought-together-checkbox:checked');
+        // const mainProduct = document.querySelector('.quantity__input');
+        // this.productsToAdd.push({
+        //   id: mainProduct.getAttribute("data-product-id"),
+        //   quantity: mainProduct.getAttribute("value")
+        // })
+
+        // if (checkedProducts.length > 0) {
+        //   checkedProducts.forEach((product) => {
+        //     productsToAdd.push({
+        //       id: product.getAttribute("data-product-id"),
+        //       quantity: product.getAttribute("data-cart-quantity")
+        //     })
+        //   })
+        // }
+
+        // const items = productsToAdd.map((product) => ({
+        //   id: product.id,
+        //   quantity: parseInt(product.quantity)
+        // }))
+
+        // const requestBody = {
+        //   items: items
+        // }
+
         const config = fetchConfig('javascript');
         config.headers['X-Requested-With'] = 'XMLHttpRequest';
         delete config.headers['Content-Type'];
 
         const formData = new FormData(this.form);
+
         if (this.cart) {
+          // requestBody.sections = this.cart.getSectionsToRender().map((section) => section.id);
+          // requestBody.sections_url = window.location.pathname;
           formData.append(
             'sections',
             this.cart.getSectionsToRender().map((section) => section.id)
@@ -42,6 +72,13 @@ if (!customElements.get('product-form')) {
         config.body = formData;
 
         fetch(`${routes.cart_add_url}`, config)
+          // fetch(`${window.Shopify.routes.root}cart/add.js`, {
+          //   method: "POST",
+          //   headers: {
+          //     "Conten-Type": "application/json"
+          //   },
+          //   body: JSON.stringify(requestBody)
+          // })
           .then((response) => response.json())
           .then((response) => {
             if (response.status) {

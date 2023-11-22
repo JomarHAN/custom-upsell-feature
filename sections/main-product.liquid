@@ -171,12 +171,22 @@
                   {%- endif -%}
                 {%- endif -%}
               </p>
+
+
+            {% when 'frequently_bought_with' %}
+              {% render 'frequently-bought-with' %}
+
+
+
+
             {%- when 'description' -%}
               {%- if product.description != blank -%}
                 <div class="product__description rte quick-add-hidden" {{ block.shopify_attributes }}>
                   {{ product.description }}
                 </div>
               {%- endif -%}
+
+
             {%- when 'sku' -%}
               <p
                 class="product__sku no-js-hidden{% if block.settings.text_style == 'uppercase' %} caption-with-letter-spacing{% elsif block.settings.text_style == 'subtitle' %} subtitle{% endif %}{% if product.selected_or_first_available_variant.sku.size == 0 %} visibility-hidden{% endif %}"
@@ -679,6 +689,13 @@
     {
       "type": "@app"
     },
+
+    {
+      "type": "frequently_bought_with",
+      "name": "Frequently Bought With",
+      "settings": []
+    },
+
     {
       "type": "text",
       "name": "t:sections.main-product.blocks.text.name",
