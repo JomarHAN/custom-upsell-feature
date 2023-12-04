@@ -10,6 +10,8 @@ if (!customElements.get('product-form')) {
         this.form.addEventListener('submit', this.onSubmitHandler.bind(this));
         this.cart = document.querySelector('cart-notification') || document.querySelector('cart-drawer');
         this.submitButton = this.querySelector('[type="submit"]');
+        this.product_bought_together = document.querySelector('#product-bought-together')
+
 
         if (document.querySelector('cart-drawer')) this.submitButton.setAttribute('aria-haspopup', 'dialog');
 
@@ -20,38 +22,10 @@ if (!customElements.get('product-form')) {
         evt.preventDefault();
         if (this.submitButton.getAttribute('aria-disabled') === 'true') return;
 
-        this.handleErrorMessage();
 
         this.submitButton.setAttribute('aria-disabled', true);
         this.submitButton.classList.add('loading');
         this.querySelector('.loading__spinner').classList.remove('hidden');
-
-        // Here we are possibility to the add one or multiple product
-        // var productsToAdd = [];
-        // const checkedProducts = document.querySelectorAll('.bought-together-checkbox:checked');
-        // const mainProduct = document.querySelector('.quantity__input');
-        // this.productsToAdd.push({
-        //   id: mainProduct.getAttribute("data-product-id"),
-        //   quantity: mainProduct.getAttribute("value")
-        // })
-
-        // if (checkedProducts.length > 0) {
-        //   checkedProducts.forEach((product) => {
-        //     productsToAdd.push({
-        //       id: product.getAttribute("data-product-id"),
-        //       quantity: product.getAttribute("data-cart-quantity")
-        //     })
-        //   })
-        // }
-
-        // const items = productsToAdd.map((product) => ({
-        //   id: product.id,
-        //   quantity: parseInt(product.quantity)
-        // }))
-
-        // const requestBody = {
-        //   items: items
-        // }
 
         const config = fetchConfig('javascript');
         config.headers['X-Requested-With'] = 'XMLHttpRequest';
@@ -59,9 +33,8 @@ if (!customElements.get('product-form')) {
 
         const formData = new FormData(this.form);
 
+
         if (this.cart) {
-          // requestBody.sections = this.cart.getSectionsToRender().map((section) => section.id);
-          // requestBody.sections_url = window.location.pathname;
           formData.append(
             'sections',
             this.cart.getSectionsToRender().map((section) => section.id)
@@ -71,14 +44,8 @@ if (!customElements.get('product-form')) {
         }
         config.body = formData;
 
+
         fetch(`${routes.cart_add_url}`, config)
-          // fetch(`${window.Shopify.routes.root}cart/add.js`, {
-          //   method: "POST",
-          //   headers: {
-          //     "Conten-Type": "application/json"
-          //   },
-          //   body: JSON.stringify(requestBody)
-          // })
           .then((response) => response.json())
           .then((response) => {
             if (response.status) {
@@ -109,6 +76,9 @@ if (!customElements.get('product-form')) {
                 cartData: response,
               });
             this.error = false;
+
+
+
             const quickAddModal = this.closest('quick-add-modal');
             if (quickAddModal) {
               document.body.addEventListener(
@@ -129,10 +99,15 @@ if (!customElements.get('product-form')) {
             console.error(e);
           })
           .finally(() => {
+
             this.submitButton.classList.remove('loading');
             if (this.cart && this.cart.classList.contains('is-empty')) this.cart.classList.remove('is-empty');
             if (!this.error) this.submitButton.removeAttribute('aria-disabled');
             this.querySelector('.loading__spinner').classList.add('hidden');
+            if (this.product_bought_together) {
+              this.product_bought_together.setAttribute('data-main-product-submitted', 'true')
+            }
+            this.bundleHandler()
           });
       }
 
@@ -150,6 +125,54 @@ if (!customElements.get('product-form')) {
           this.errorMessage.textContent = errorMessage;
         }
       }
+
+      async bundleHandler() {
+        const bundleChecked = document.querySelectorAll('input.bought-together-checkbox:checked')
+        var productData = []
+
+        console.log(this.cart)
+
+        if (bundleChecked.length === 0) return;
+
+        bundleChecked.forEach(product => productData.push({
+          'id': parseInt(product.getAttribute('data-product-variant-id')),
+          'quantity': 1
+        }));
+
+        let requestBody = {
+          'items': productData
+        }
+
+        await fetch(window.Shopify.routes.root + 'cart/add.js', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(requestBody)
+        })
+          .then((response) => { return response.json() })
+          // .then((response) => {
+
+          //   if (!this.error)
+          //     publish(PUB_SUB_EVENTS.cartUpdate, {
+          //       // source: 'product-form',
+          //       // productVariantId: formData.get('id'),
+          //       cartData: response,
+          //     });
+          //   this.error = false;
+          // })
+          .catch((error) => { console.log('Error: ', error) })
+
+
+
+
+        // const cart = await fetch('/cart.json').then(res => res.json())
+
+        // document.querySelectorAll(".cart-count-bubble").forEach((el) => {
+        //   el.textContent = cart.item_count;
+        // });
+      }
+
     }
   );
 }

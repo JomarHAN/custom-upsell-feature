@@ -68,7 +68,10 @@
 %}
 
 {% if product_bought_together.size > 0 %}
-  <div id="product-bought-together" class="product-bought-together__container">
+  <div
+    id="product-bought-together"
+    class="product-bought-together__container"
+    data-main-product-submitted="false">
     <div class="bought-together" id="bought-together-id">
       {% assign prod_array = product.metafields.custom.frequently_bought_with.value %}
       <div class="frequently-bought-together">
@@ -88,7 +91,8 @@
               <label class="product-item-label" style="background-image: url({{ image | image_url: width: 200 }});">
                 <input
                   type="checkbox"
-                  data-product-id="{{ prod.selected_or_first_available_variant.id }}"
+                  data-product-id="{{ prod.id }}"
+                  data-product-variant-id="{{ prod.selected_or_first_available_variant.id }}"
                   data-cart-quantity="1"
                   name="frequent-bought-choice"
                   id="frequent-bought-choice"
@@ -105,3 +109,38 @@
     </div>
   </div>
 {% endif %}
+
+<script>
+
+  // const mainProductForm = document.querySelector('.product-form form');
+
+
+  
+  // mainProductForm.addEventListener('submit', async () => {
+  //   const bundleChecked = document.querySelectorAll('input.bought-together-checkbox:checked')
+  //       var productData = []
+
+  //       // console.log(bundleChecked)
+
+  //       if (bundleChecked.length === 0) return;
+
+  //       bundleChecked.forEach(product => productData.push({
+  //         'id': parseInt(product.getAttribute('data-product-variant-id')),
+  //         'quantity': 1
+  //       }));
+
+  //       let requestBody = {
+  //         'items': productData
+  //       }
+
+  //       fetch(window.Shopify.routes.root + 'cart/add.js', {
+  //         method: 'POST',
+  //         headers: {
+  //           'Content-Type': 'application/json'
+  //         },
+  //         body: JSON.stringify(requestBody)
+  //       })
+  //         .then((response) => { return response.json() })
+  //         .catch((error) => { console.log('Error: ', error) })
+  // })
+</script>
