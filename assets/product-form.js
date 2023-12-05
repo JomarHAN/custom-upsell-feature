@@ -79,21 +79,21 @@ if (!customElements.get('product-form')) {
 
 
 
-            const quickAddModal = this.closest('quick-add-modal');
-            if (quickAddModal) {
-              document.body.addEventListener(
-                'modalClosed',
-                () => {
-                  setTimeout(() => {
-                    this.cart.renderContents(response);
-                  });
-                },
-                { once: true }
-              );
-              quickAddModal.hide(true);
-            } else {
-              this.cart.renderContents(response);
-            }
+            // const quickAddModal = this.closest('quick-add-modal');
+            // if (quickAddModal) {
+            //   document.body.addEventListener(
+            //     'modalClosed',
+            //     () => {
+            //       setTimeout(() => {
+            //         this.cart.renderContents(response);
+            //       });
+            //     },
+            //     { once: true }
+            //   );
+            //   quickAddModal.hide(true);
+            // } else {
+            //   this.cart.renderContents(response);
+            // }
           })
           .catch((e) => {
             console.error(e);
@@ -130,9 +130,7 @@ if (!customElements.get('product-form')) {
         const bundleChecked = document.querySelectorAll('input.bought-together-checkbox:checked')
         var productData = []
 
-        console.log(this.cart)
-
-        if (bundleChecked.length === 0) return;
+        if (bundleChecked.length === 0) { window.location.href = '/cart'; return };
 
         bundleChecked.forEach(product => productData.push({
           'id': parseInt(product.getAttribute('data-product-variant-id')),
@@ -151,26 +149,15 @@ if (!customElements.get('product-form')) {
           body: JSON.stringify(requestBody)
         })
           .then((response) => { return response.json() })
-          // .then((response) => {
-
-          //   if (!this.error)
-          //     publish(PUB_SUB_EVENTS.cartUpdate, {
-          //       // source: 'product-form',
-          //       // productVariantId: formData.get('id'),
-          //       cartData: response,
-          //     });
-          //   this.error = false;
-          // })
           .catch((error) => { console.log('Error: ', error) })
 
+        const cart = await fetch('/cart.json').then(res => res.json())
 
+        document.querySelectorAll(".cart-count-bubble").forEach((el) => {
+          el.textContent = cart.item_count;
+        });
 
-
-        // const cart = await fetch('/cart.json').then(res => res.json())
-
-        // document.querySelectorAll(".cart-count-bubble").forEach((el) => {
-        //   el.textContent = cart.item_count;
-        // });
+        window.location.href = '/cart';
       }
 
     }

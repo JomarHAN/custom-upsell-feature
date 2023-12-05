@@ -27,6 +27,14 @@
           "settings": {
           }
         },
+        "16f2b9ec-a76c-4d73-b4ee-690f2dfddf30": {
+          "type": "inventory",
+          "settings": {
+            "text_style": "body",
+            "inventory_threshold": 10,
+            "show_inventory_quantity": true
+          }
+        },
         "variant_picker": {
           "type": "variant_picker",
           "settings": {
@@ -122,6 +130,7 @@
         "title",
         "caption",
         "price",
+        "16f2b9ec-a76c-4d73-b4ee-690f2dfddf30",
         "variant_picker",
         "quantity_selector",
         "buy_buttons",
