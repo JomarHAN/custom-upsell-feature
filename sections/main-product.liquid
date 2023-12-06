@@ -121,6 +121,38 @@
                 {%- assign product_form_installment_id = 'product-form-installment-' | append: section.id -%}
                 {%- form 'product', product, id: product_form_installment_id, class: 'installment caption-large' -%}
                   <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+                  {% if product.metafields.custom.date_picker == true %}
+                    <input
+                      type="date"
+                      id="datepicker"
+                      name="date-picker"
+                      />
+
+                      <script type="text/javascript">
+
+                        var today = new Date().toISOString().split('T')[0];
+                        const inputDate = document.querySelector('input#datepicker')
+                        inputDate.setAttribute('min', today);
+
+                        const validate = (dateString) => {
+                          const day = (new Date(dateString)).getUTCDay();
+                          if(day == 0 || day == 6){
+                            return false
+                          }
+                          return true
+                        }
+
+                        inputDate.addEventListener('change', (e) => {
+
+                          if(!validate(e.target.value)){
+                            e.target.value = ''
+                            alert('We closed on Saturday and Sunday')
+                          }
+                        })
+                        
+                        
+                      </script>
+                  {% endif %}
                   {{ form | payment_terms }}
                 {%- endform -%}
               </div>
