@@ -122,18 +122,58 @@
                 {%- form 'product', product, id: product_form_installment_id, class: 'installment caption-large' -%}
                   <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
                   {% if product.metafields.custom.date_picker == true %}
-                    <input
+                    <div>
+                      <label for="datepicker">Select Date:</label>
+                      <input
                       type="date"
                       id="datepicker"
-                      name="date-picker"
+                      name="properties[Date]" form="{{product_form_id}}"
+                      required
                       />
+                    </div>
+
+                    <div>
+                      <input type="hidden" id="inputTime" name="properties[Time]" form="{{product_form_id}}">
+                      <label for="timepicker">Select Time:</label>
+                      <select name="timepicker" id="timepicker" name="properties[Time]" form="{{product_form_id}}" required>
+                        <option value="">--:--</option>
+                        <option value="09:00">09:00</option>
+                        <option value="09:30">09:30</option>
+                        <option value="10:00">10:00</option>
+                        <option value="10:30">10:30</option>
+                        <option value="11:00">11:00</option>
+                        <option value="11:30">11:30</option>
+                        <option value="12:00">12:00</option>
+                        <option value="12:30">12:30</option>
+                        <option value="13:00">13:00</option>
+                        <option value="13:30">13:30</option>
+                        <option value="14:00">14:00</option>
+                        <option value="14:30">14:30</option>
+                        <option value="15:00">15:00</option>
+                        <option value="15:30">15:30</option>
+                        <option value="16:00">16:00</option>
+                        <option value="16:30">16:30</option>
+                        <option value="17:00">17:00</option>
+                      </select>
+                    </div>
 
                       <script type="text/javascript">
 
-                        var today = new Date().toISOString().split('T')[0];
-                        const inputDate = document.querySelector('input#datepicker')
-                        inputDate.setAttribute('min', today);
+                        var today = new Date()
+                        var nextDay = today.setDate(today.getDate() + 1)
+                        var tomorrow = new Date(nextDay).toISOString().split('T')[0]
 
+                        const datePicker = document.querySelector('input#datepicker')
+                        const timePicker = document.querySelector('select#timepicker')
+
+                        timePicker.addEventListener('change', (e) => {
+                          if(e.target.value != ''){
+                            document.querySelector('#inputTime').value = e.target.value
+                          }
+                        })
+
+
+                        datePicker.setAttribute('min', tomorrow);
                         const validate = (dateString) => {
                           const day = (new Date(dateString)).getUTCDay();
                           if(day == 0 || day == 6){
@@ -142,14 +182,13 @@
                           return true
                         }
 
-                        inputDate.addEventListener('change', (e) => {
-
+                        datePicker.addEventListener('change', (e) => {
                           if(!validate(e.target.value)){
                             e.target.value = ''
                             alert('We closed on Saturday and Sunday')
-                          }
+                          } 
                         })
-                        
+                          
                         
                       </script>
                   {% endif %}
